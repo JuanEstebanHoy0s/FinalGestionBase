@@ -1,0 +1,1278 @@
+create database SISTEMAGESTION
+use SISTEMAGESTION
+
+
+create table Cliente(
+idCliente int,
+constraint PK_cliente PRIMARY KEY (idCliente),
+nombreCli varchar (50) not null,
+apellidoCli varchar (50),
+direccionCli varchar (50))
+
+
+create table Telefono(
+idTelefono int,
+constraint PK_Telefono PRIMARY KEY (idTelefono),
+idCliente int,
+idtipoTelefono int,
+telefono numeric (10)
+
+)
+alter table  Telefono
+ add constraint FK_Telefono  foreign key (idCliente) 
+ references Cliente (idCliente)
+
+create table TipoTelefono (
+idtipoTelefono int,
+constraint PK_TipoTelefono PRIMARY KEY (idtipoTelefono),
+descripcion varchar (10)
+
+)
+
+alter table  Telefono
+ add constraint FK_TipoTelefono  foreign key (idtipoTelefono) 
+ references TipoTelefono (idtipoTelefono)
+
+
+create table Contacto(
+idContacto int, 
+correoContacto varchar(50) not null,
+asunto varchar (30) not null,
+descripcionAsunto varchar (200)  not null,
+idCliente int
+)
+
+alter table  Contacto
+ add constraint FK_Contacto  foreign key (idCliente) 
+ references Cliente (idCliente)
+
+create table RegistroCliente(
+idLogin int,
+constraint PK_RegistroCliente primary key (idLogin),
+idCliente int,
+email varchar (50) unique,
+confirmarCorreo varchar (50) not null,
+contrasena varchar (50) not null,
+confirmarContrasena  varchar(50) not null
+)
+
+alter table  RegistroCliente
+ add constraint FK_RegistroCliente  foreign key (idCliente) 
+ references Cliente (idCliente)
+
+create table NumIdentific(
+idNumIdentific int not null,
+constraint PK_idNumIdentific primary key (idNumIdentific),
+numeroDocumento  numeric(20) not null,
+idTipoIdenti int not null,
+idCliente int not null
+);
+
+alter table NumIdentific
+add constraint FK_idCliente foreign key (idCliente)
+references Cliente (idCliente)
+
+create table tipoDocumento(
+idTipoIdenti int not null,
+constraint PK_idTipoIdenti primary key (idTipoIdenti),
+descripcion varchar(30) not null
+);
+
+alter table NumIdentific
+add constraint FK_idTipoIdenti foreign key (idTipoIdenti)
+references tipoDocumento (idTipoIdenti);
+
+
+----------------------------------------------
+CREATE table ClaseRiesgo(
+idClaseRiesgo int,
+constraint PK_CLaseRiesgo primary key (idClaseRiesgo),
+nivelClase varchar (50) not null,
+descripcion	 varchar (100) not null,
+idCliente int
+)
+
+alter table ClaseRiesgo
+add constraint FK_ClaseRiesgoCL foreign key (idCliente)
+references Cliente (idCliente);
+
+create table Factura (
+idFactura int IDENTITY(1,1),
+constraint PK_Factura primary key (idFactura),
+idCliente int,
+nit numeric (10),
+nombreEmpresa varchar (50),
+fechaFactura date,
+total numeric (12)
+)
+create table Garantia(
+idGarantia int IDENTITY(1,1) not null,
+constraint PK_idGarantia primary key (idGarantia),
+descripcion varchar(200) not null,
+fechaIni date not null,
+fechaFin date not null,
+idFactura int not null
+constraint FK_idFactura foreign key
+(idFactura) references Factura(idFactura)
+);
+
+
+create table DetalleServicio(
+idDetalle int IDENTITY(1,1),
+constraint PK_Detalle primary key (idDetalle),
+idFactura int,
+idServicio int,
+idEmpleado int,
+fechaServicio date, 
+subTotalServicio numeric (12) not null,
+ivaServicio numeric (12) not null
+)
+create table Servicio(
+idServicio int not null,
+constraint PK_idServicio primary key(idServicio),
+descripcion varchar(200) not null,
+valorHoras int not null
+);
+
+alter table DetalleServicio 
+add constraint FK_detaller foreign key (idServicio)
+references Servicio(idServicio)
+
+create table Empleado(
+cedula int not null,
+constraint PK_cedula primary key (cedula),
+nombre varchar(30) not null,
+apellido varchar(30) not null,
+telefono numeric (10) not null,
+cargo varchar(30) not null
+);
+
+create table RegistroEmpleado(
+idRegistro int not null,
+constraint PK_idRegistro primary key (idRegistro),
+email varchar(50) unique not null,
+contraseña varchar(50) not null,
+confirmContraseña varchar(50) not null,
+cedula int not null,
+constraint FK_cedula foreign key (cedula)
+references empleado (cedula)
+);
+
+alter table DetalleServicio 
+add constraint FK_DetalleEmple foreign key (idEmpleado)
+references Empleado  (cedula);
+
+alter table DetalleServicio 
+add constraint FK_DetalleFac foreign key (idFactura)
+references Factura  (idFactura);
+
+alter table Factura 
+add constraint FK_facturaCli foreign key (idCliente)
+references Cliente (idCliente);
+
+
+
+
+
+create table Clasificacion (
+idClasificacion int not null,
+constraint PK_idClasificacion primary key
+ (idClasificacion),
+tipoClasificacion varchar(50) not null,
+cantidadEmpleados int not null,
+descripcion varchar(50) not null,
+idActividadEconomica int not null,
+idCliente int not null,
+constraint FK_idCliente2 foreign key (idCliente)
+references Cliente(idCliente)
+);
+
+create table ActividadEconomica(
+idActividadEconomica int not null,
+constraint PK_idActividadEconomica 
+primary key (idActividadEconomica),
+codigoActividad int not null,
+descripcionActividad varchar(100) not null
+);
+
+alter table Clasificacion
+add constraint FK_idActividadEconomica foreign key
+(idActividadEconomica) 
+references ActividadEconomica(idActividadEconomica)
+-----------------------------------------------------------------------------------------------------------------
+
+
+INSERT INTO Cliente (idCliente, nombreCli, apellidoCli, direccionCli) 
+VALUES 
+(1, 'Juan', 'Pérez', 'Calle Ficticia 123'),
+(2, 'Ana', 'Gómez', 'Avenida Real 456'),
+(3, 'Carlos', 'Martínez', 'Calle Luna 789'),
+(4, 'Pedro', 'Sánchez', 'Calle Sol 100'),
+(5, 'Laura', 'Torres', 'Avenida 1234'),
+(6, 'Marta', 'Fernández', 'Calle del Lago 321'),
+(7, 'Ricardo', 'Hernández', 'Calle Mayor 213'),
+(8, 'David', 'García', 'Calle Nueva 567'),
+(9, 'Elena', 'Vázquez', 'Avenida Central 987'),
+(10, 'José', 'Díaz', 'Calle Sierra 800'),
+(11, 'Sofía', 'López', 'Calle de las Flores 234'),
+(12, 'Raúl', 'Ramírez', 'Calle Verde 432'),
+(13, 'Andrea', 'Jiménez', 'Calle Bonita 666'),
+(14, 'Luis', 'Ruiz', 'Avenida de la Paz 777'),
+(15, 'Patricia', 'Serrano', 'Calle Rosario 444'),
+(16, 'Fernando', 'Mendoza', 'Calle Brisa 101'),
+(17, 'Isabel', 'Cordero', 'Calle Azul 333'),
+(18, 'Martín', 'Gutiérrez', 'Calle Norte 555'),
+(19, 'Silvia', 'Ramírez', 'Calle Primavera 222'),
+(20, 'Antonio', 'González', 'Avenida Libertad 888'),
+(21, 'Carmen', 'Vázquez', 'Calle Palma 111'),
+(22, 'Ricardo', 'Jiménez', 'Calle del Sol 999'),
+(23, 'Rosa', 'Sánchez', 'Calle del Río 654'),
+(24, 'Julio', 'Hernández', 'Avenida Sur 444'),
+(25, 'Antonio', 'López', 'Calle Carretera 888'),
+(26, 'Carlos', 'Mendoza', 'Avenida 2 555'),
+(27, 'Natalia', 'Pérez', 'Calle Magnolia 222'),
+(28, 'Víctor', 'Torres', 'Calle Olivos 333'),
+(29, 'Lucía', 'Fernández', 'Calle Aragón 444'),
+(30, 'Ángel', 'García', 'Avenida Nubes 555'),
+(31, 'Javier', 'Cano', 'Calle Mar 666'),
+(32, 'Adriana', 'López', 'Avenida Sol 777'),
+(33, 'Carlos', 'González', 'Calle Rojas 222'),
+(34, 'María', 'Suárez', 'Calle Independencia 333'),
+(35, 'Víctor', 'Díaz', 'Calle del Río 555'),
+(36, 'Marta', 'López', 'Calle Campo 444'),
+(37, 'Óscar', 'Jiménez', 'Calle Castillo 111'),
+(38, 'Mercedes', 'Rodríguez', 'Calle Las Palmas 555'),
+(39, 'José', 'Martínez', 'Avenida Pinar 999'),
+(40, 'Antonio', 'Torres', 'Calle del Lago 555');
+
+
+INSERT INTO TipoTelefono (idtipoTelefono, descripcion) 
+VALUES 
+(1, 'Móvil'),
+(2, 'Fijo');
+
+INSERT INTO Telefono (idTelefono, idCliente, idtipoTelefono, telefono)
+VALUES
+(1, 1, 1, 3001234567), 
+(2, 1, 2, 1234567890),
+(3, 2, 1, 3002345678),
+(4, 2, 2, 1235678901),
+(5, 3, 1, 3003456789),
+(6, 3, 2, 1236789012),
+(7, 4, 1, 3004567890),
+(8, 4, 2, 1237890123),
+(9, 5, 1, 3005678901),
+(10, 5, 2, 1238901234),
+(11, 6, 1, 3006789012),
+(12, 6, 2, 1239012345),
+(13, 7, 1, 3007890123),
+(14, 7, 2, 1230123456),
+(15, 8, 1, 3008901234),
+(16, 8, 2, 1231234567),
+(17, 9, 1, 3009012345),
+(18, 9, 2, 1232345678),
+(19, 10, 1, 3010123456),
+(20, 10, 2, 1233456789),
+(21, 11, 1, 3011234567),
+(22, 11, 2, 1234567890),
+(23, 12, 1, 3012345678),
+(24, 12, 2, 1235678901),
+(25, 13, 1, 3013456789),
+(26, 13, 2, 1236789012),
+(27, 14, 1, 3014567890),
+(28, 14, 2, 1237890123),
+(29, 15, 1, 3015678901),
+(30, 15, 2, 1238901234),
+(31, 16, 1, 3016789012),
+(32, 16, 2, 1239012345),
+(33, 17, 1, 3017890123),
+(34, 17, 2, 1230123456),
+(35, 18, 1, 3018901234),
+(36, 18, 2, 1231234567),
+(37, 19, 1, 3019012345),
+(38, 19, 2, 1232345678),
+(39, 20, 1, 3020123456),
+(40, 20, 2, 1233456789),
+(41, 21, 1, 3002345678),
+(42, 21, 2, 1234567890),
+(43, 22, 1, 3003456789),
+(44, 22, 2, 1235678901),
+(45, 23, 1, 3004567890),
+(46, 23, 2, 1236789012),
+(47, 24, 1, 3005678901),
+(48, 24, 2, 1237890123),
+(49, 25, 1, 3006789012),
+(50, 25, 2, 1239012345),
+(51, 26, 1, 3007890123),
+(52, 26, 2, 1230123456),
+(53, 27, 1, 3008901234),
+(54, 27, 2, 1231234567),
+(55, 28, 1, 3009012345),
+(56, 28, 2, 1232345678),
+(57, 29, 1, 3010123456),
+(58, 29, 2, 1233456789),
+(59, 30, 1, 3011234567),
+(60, 30, 2, 1234567890),
+(61, 31, 1, 3012345678),
+(62, 31, 2, 1235678901),
+(63, 32, 1, 3013456789),
+(64, 32, 2, 1236789012),
+(65, 33, 1, 3014567890),
+(66, 33, 2, 1237890123),
+(67, 34, 1, 3015678901),
+(68, 34, 2, 1238901234),
+(69, 35, 1, 3016789012),
+(70, 35, 2, 1239012345),
+(71, 36, 1, 3017890123),
+(72, 36, 2, 1230123456),
+(73, 37, 1, 3018901234),
+(74, 37, 2, 1231234567),
+(75, 38, 1, 3019012345),
+(76, 38, 2, 1232345678),
+(77, 39, 1, 3020123456),
+(78, 39, 2, 1233456789),
+(79, 40, 1, 3021234567),
+(80, 40, 2, 1234567890);
+
+INSERT INTO Contacto (idContacto, correoContacto, asunto, descripcionAsunto, idCliente)
+VALUES 
+(1, 'juan.perez@example.com', 'Consulta', 'Consulta sobre servicios', 1),
+(2, 'ana.gomez@example.com', 'Queja', 'Queja sobre el servicio recibido', 2),
+(3, 'carlos.martinez@example.com', 'Consulta', 'Consulta sobre productos', 3),
+(4, 'pedro.sanchez@example.com', 'Reclamo', 'Reclamo por factura incorrecta', 4),
+(5, 'laura.torres@example.com', 'Consulta', 'Interés en nuevos servicios', 5),
+(6, 'marta.fernandez@example.com', 'Reclamo', 'Reclamo por mal servicio', 6),
+(7, 'ricardo.hernandez@example.com', 'Queja', 'Problemas con la entrega', 7),
+(8, 'david.garcia@example.com', 'Consulta', 'Consulta sobre precios', 8),
+(9, 'elena.vazquez@example.com', 'Consulta', 'Consulta sobre condiciones', 9),
+(10, 'jose.diaz@example.com', 'Queja', 'Queja por producto defectuoso', 10),
+(11, 'sofia.lopez@example.com', 'Consulta', 'Interés en asociación', 11),
+(12, 'raul.ramirez@example.com', 'Reclamo', 'Reclamo por cargos no autorizados', 12),
+(13, 'andrea.jimenez@example.com', 'Consulta', 'Consulta sobre facturación', 13),
+(14, 'luis.ruiz@example.com', 'Reclamo','No puedo visualizar le usuario',14);
+
+
+INSERT INTO RegistroCliente (idLogin, idCliente, email, confirmarCorreo, contrasena, confirmarContrasena) 
+VALUES 
+
+(1, 1, 'juan.perez@example.com', 'juan.perez@example.com', '12345', '12345'),
+(2, 2, 'ana.gomez@example.com', 'ana.gomez@example.com', 'password123', 'password123'),
+(3, 3, 'carlos.martinez@example.com', 'carlos.martinez@example.com', 'qwerty123', 'qwerty123'),
+(4, 4, 'pedro.sanchez@example.com', 'pedro.sanchez@example.com', '123qweasd', '123qweasd'),
+(5, 5, 'laura.torres@example.com', 'laura.torres@example.com', 'secret2023', 'secret2023'),
+(6, 6, 'marta.fernandez@example.com', 'marta.fernandez@example.com', 'contrasena123', 'contrasena123'),
+(7, 7, 'ricardo.hernandez@example.com', 'ricardo.hernandez@example.com', 'clave2023', 'clave2023'),
+(8, 8, 'david.garcia@example.com', 'david.garcia@example.com', 'password321', 'password321'),
+(9, 9, 'elena.vazquez@example.com', 'elena.vazquez@example.com', 'abc12345', 'abc12345'),
+(10, 10, 'jose.diaz@example.com', 'jose.diaz@example.com', '123abc456', '123abc456'),
+(11, 11, 'sofia.lopez@example.com', 'sofia.lopez@example.com', 'qwerty2024', 'qwerty2024'),
+(12, 12, 'raul.ramirez@example.com', 'raul.ramirez@example.com', 'ramirez123', 'ramirez123'),
+(13, 13, 'andrea.jimenez@example.com', 'andrea.jimenez@example.com', '12345678q', '12345678q'),
+(14, 14, 'luis.ruiz@example.com', 'luis.ruiz@example.com', 'asdasd123', 'asdasd123'),
+(15, 15, 'patricia.serrano@example.com', 'patricia.serrano@example.com', 'serrano2023', 'serrano2023'),
+(16, 16, 'fernando.mendoza@example.com', 'fernando.mendoza@example.com', 'pass1234', 'pass1234'),
+(17, 17, 'isabel.cordero@example.com', 'isabel.cordero@example.com', 'isabel123', 'isabel123'),
+(18, 18, 'martin.gutierrez@example.com', 'martin.gutierrez@example.com', 'gutierrez2024', 'gutierrez2024'),
+(19, 19, 'silvia.ramirez@example.com', 'silvia.ramirez@example.com', 'silvia2024', 'silvia2024'),
+(20, 20, 'antonio.gonzalez@example.com', 'antonio.gonzalez@example.com', 'antonio2024', 'antonio2024'),
+(21, 21, 'carmen.vazquez@example.com', 'carmen.vazquez@example.com', 'carmen123', 'carmen123'),
+(22, 22, 'ricardo.jimenez@example.com', 'ricardo.jimenez@example.com', 'ricardo2024', 'ricardo2024'),
+(23, 23, 'rosa.sanchez@example.com', 'rosa.sanchez@example.com', 'sanchez2023', 'sanchez2023'),
+(24, 24, 'julio.hernandez@example.com', 'julio.hernandez@example.com', 'julio1234', 'julio1234'),
+(25, 25, 'antonio.lopez@example.com', 'antonio.lopez@example.com', 'lopez2024', 'lopez2024'),
+(26, 26, 'carlos.mendoza@example.com', 'carlos.mendoza@example.com', 'mendoza123', 'mendoza123'),
+(27, 27, 'natalia.perez@example.com', 'natalia.perez@example.com', 'perez2023', 'perez2023'),
+(28, 28, 'victor.torres@example.com', 'victor.torres@example.com', 'torres2023', 'torres2023'),
+(29, 29, 'lucia.fernandez@example.com', 'lucia.fernandez@example.com', 'lucia2024', 'lucia2024'),
+(30, 30, 'angel.garcia@example.com', 'angel.garcia@example.com', 'garcia1234', 'garcia1234'),
+(31, 31, 'javier.cano@example.com', 'javier.cano@example.com', 'javier2023', 'javier2023'),
+(32, 32, 'adriana.lopez@example.com', 'adriana.lopez@example.com', 'adriana2024', 'adriana2024'),
+(33, 33, 'carlos.gonzalez@example.com', 'carlos.gonzalez@example.com', 'gonzalez123', 'gonzalez123'),
+(34, 34, 'maria.suarez@example.com', 'maria.suarez@example.com', 'suarez123', 'suarez123'),
+(35, 35, 'victor.diaz@example.com', 'victor.diaz@example.com', 'victor2024', 'victor2024'),
+(36, 36, 'marta.lopez@example.com', 'marta.lopez@example.com', 'lopez2023', 'lopez2023'),
+(37, 37, 'oscar.jimenez@example.com', 'oscar.jimenez@example.com', 'oscar1234', 'oscar1234'),
+(38, 38, 'mercedes.rodriguez@example.com', 'mercedes.rodriguez@example.com', 'mercedes123', 'mercedes123'),
+(39, 39, 'jose.martinez@example.com', 'jose.martinez@example.com', 'martinez2024', 'martinez2024'),
+(40, 40, 'antonio.torres@example.com', 'antonio.torres@example.com', 'torres123', 'torres123');
+
+
+INSERT INTO tipoDocumento (idTipoIdenti, descripcion)
+VALUES
+(1, 'Cédula de Ciudadanía'),
+(2, 'Registro Único Tributario'),
+(3, 'Tarjeta de Identidad'),
+(4, 'Licencia de Conducir'),
+(5, 'Cédula de Extranjería'),
+(6, 'Núm Identificación Fiscal'),
+(7, 'Tarjeta de Residente');
+
+
+
+INSERT INTO NumIdentific (idNumIdentific, numeroDocumento, idTipoIdenti, idCliente)
+VALUES
+(3, 2345678901, 1, 3),
+(4, 3456789012, 3, 4),
+(5, 4567890123, 4, 5),
+(6, 5678901234, 5, 6),
+(7, 6789012345, 6, 7),
+(8, 7890123456, 7, 8),
+(9, 8901234567, 1, 9),
+(10, 9012345678, 2, 10),
+(11, 1230987654, 3, 11),
+(12, 2341098765, 4, 12),
+(13, 3452109876, 5, 13),
+(14, 4563210987, 6, 14),
+(15, 5674321098, 7, 15),
+(16, 6785432109, 1, 16),
+(17, 7896543210, 2, 17),
+(18, 8907654321, 3, 18),
+(19, 9018765432, 4, 19),
+(20, 1232109876, 5, 20),
+(21, 2343210987, 6, 21),
+(22, 3454321098, 7, 22),
+(23, 4565432109, 1, 23),
+(24, 5676543210, 2, 24),
+(25, 6787654321, 3, 25),
+(26, 7898765432, 4, 26),
+(27, 8909876543, 5, 27),
+(28, 9010987654, 6, 28),
+(29, 1233210987, 7, 29),
+(30, 2344321098, 1, 30),
+(31, 3455432109, 2, 31),
+(32, 4566543210, 3, 32),
+(33, 5677654321, 4, 33),
+(34, 6788765432, 5, 34),
+(35, 7899876543, 6, 35),
+(36, 8900987654, 7, 36),
+(37, 9011098765, 1, 37),
+(38, 1234321098, 2, 38),
+(39, 2345432109, 3, 39),
+(40, 3456543210, 4, 40);
+
+
+
+INSERT INTO ClaseRiesgo (idClaseRiesgo, nivelClase, descripcion, idCliente)
+VALUES
+(3, 'Bajo', 'Riesgo bajo debido a actividad empresarial estable', 3),
+(4, 'Alto', 'Riesgo alto por volumen de operaciones internacionales', 4),
+(5, 'Medio', 'Riesgo medio por fluctuaciones en el mercado', 5),
+(6, 'Bajo', 'Riesgo bajo por negocio familiar consolidado', 6),
+(7, 'Medio', 'Riesgo medio por la diversificación de actividades', 7),
+(8, 'Alto', 'Riesgo alto por alta rotación de clientes', 8),
+(9, 'Bajo', 'Riesgo bajo debido a la estabilidad de la industria', 9),
+(10, 'Medio', 'Riesgo medio por exposición a mercados volátiles', 10),
+(11, 'Bajo', 'Riesgo bajo por control efectivo de operaciones', 11),
+(12, 'Medio', 'Riesgo medio por alto endeudamiento empresarial', 12),
+(13, 'Alto', 'Riesgo alto debido a la alta competencia en el sector', 13),
+(14, 'Bajo', 'Riesgo bajo debido a pocos cambios regulatorios', 14),
+(15, 'Medio', 'Riesgo medio por constante cambio en legislación', 15),
+(16, 'Alto', 'Riesgo alto debido a la alta concentración de clientes', 16),
+(17, 'Bajo', 'Riesgo bajo por presencia en mercados consolidados', 17),
+(18, 'Medio', 'Riesgo medio por riesgos tecnológicos moderados', 18),
+(19, 'Bajo', 'Riesgo bajo debido a actividad empresarial diversificada', 19),
+(20, 'Alto', 'Riesgo alto por dependencias a pocas fuentes de ingreso', 20),
+(21, 'Medio', 'Riesgo medio debido a exposición en mercados internacionales', 21),
+(22, 'Bajo', 'Riesgo bajo por sólida estructura organizativa', 22),
+(23, 'Alto', 'Riesgo alto debido a operaciones en regiones inestables', 23),
+(24, 'Medio', 'Riesgo medio debido a alto volumen de activos', 24),
+(25, 'Bajo', 'Riesgo bajo por el control efectivo de los recursos', 25),
+(26, 'Medio', 'Riesgo medio por la alta dependencia de clientes clave', 26),
+(27, 'Alto', 'Riesgo alto debido a la exposición a fluctuaciones económicas', 27),
+(28, 'Bajo', 'Riesgo bajo por la diversificación del portafolio', 28),
+(29, 'Medio', 'Riesgo medio debido a la competencia en el sector local', 29),
+(30, 'Bajo', 'Riesgo bajo por políticas de control interno fuertes', 30),
+(31, 'Alto', 'Riesgo alto debido a la dependencia de proveedores externos', 31),
+(32, 'Bajo', 'Riesgo bajo debido a la estabilidad del mercado local', 32),
+(33, 'Medio', 'Riesgo medio por la exposición a crisis globales', 33),
+(34, 'Alto', 'Riesgo alto debido a la falta de diversificación en el modelo de negocio', 34),
+(35, 'Bajo', 'Riesgo bajo debido a una sólida reputación en el mercado', 35),
+(36, 'Medio', 'Riesgo medio por alta rotación de personal', 36),
+(37, 'Bajo', 'Riesgo bajo por baja exposición en mercados emergentes', 37),
+(38, 'Alto', 'Riesgo alto debido a alta volatilidad en los precios de los productos', 38),
+(39, 'Medio', 'Riesgo medio por riesgos asociados a la gestión de recursos humanos', 39),
+(40, 'Bajo', 'Riesgo bajo debido a la estabilidad operativa y financiera', 40);
+
+
+INSERT INTO Factura ( idCliente, nit, nombreEmpresa, fechaFactura, total)
+VALUES
+( 1, 123456789, 'Occupational Health and Safety', '2024-11-01', 1000.00),
+( 2, 123456789, 'Occupational Health and Safety', '2024-11-02', 1500.50),
+( 3, 123456789, 'Occupational Health and Safety', '2024-11-03', 2000.75),
+( 4, 123456789, 'Occupational Health and Safety', '2024-11-04', 2500.25),
+( 5, 123456789, 'Occupational Health and Safety', '2024-11-05', 1200.80),
+( 6, 123456789, 'Occupational Health and Safety', '2024-11-06', 3000.45),
+( 7, 123456789, 'Occupational Health and Safety', '2024-11-07', 1700.30),
+( 8, 123456789, 'Occupational Health and Safety', '2024-11-08', 1850.60),
+( 9, 123456789, 'Occupational Health and Safety', '2024-11-09', 2100.50),
+( 10, 123456789, 'Occupational Health and Safety', '2024-11-10', 2750.00),
+( 11, 123456789, 'Occupational Health and Safety', '2024-11-11', 1800.90),
+( 12, 123456789, 'Occupational Health and Safety', '2024-11-12', 1900.00),
+( 13, 123456789, 'Occupational Health and Safety', '2024-11-13', 1750.40),
+( 14, 123456789, 'Occupational Health and Safety', '2024-11-14', 2200.10),
+( 15, 123456789, 'Occupational Health and Safety', '2024-11-15', 2400.75),
+( 16, 123456789, 'Occupational Health and Safety', '2024-11-16', 2600.80),
+( 17, 123456789, 'Occupational Health and Safety', '2024-11-17', 1950.60),
+( 18, 123456789, 'Occupational Health and Safety', '2024-11-18', 2050.25),
+( 19, 123456789, 'Occupational Health and Safety', '2024-11-19', 1500.00),
+( 20, 123456789, 'Occupational Health and Safety', '2024-11-20', 2300.75),
+( 1, 123456789, 'Occupational Health and Safety', '2024-11-21', 1850.00),
+( 2, 123456789, 'Occupational Health and Safety', '2024-11-22', 1900.50),
+( 3, 123456789, 'Occupational Health and Safety', '2024-11-23', 2000.75),
+( 4, 123456789, 'Occupational Health and Safety', '2024-11-24', 1700.40),
+( 5, 123456789, 'Occupational Health and Safety', '2024-11-25', 2150.60),
+( 6, 123456789, 'Occupational Health and Safety', '2024-11-26', 1600.30),
+( 7, 123456789, 'Occupational Health and Safety', '2024-11-27', 1950.50),
+( 8, 123456789, 'Occupational Health and Safety', '2024-11-28', 1750.25),
+( 9, 123456789, 'Occupational Health and Safety', '2024-11-29', 2050.75),
+( 10, 123456789, 'Occupational Health and Safety', '2024-11-30', 2250.00),
+( 11, 123456789, 'Occupational Health and Safety', '2024-12-01', 1850.00),
+( 12, 123456789, 'Occupational Health and Safety', '2024-12-02', 1900.50),
+( 13, 123456789, 'Occupational Health and Safety', '2024-12-03', 2400.75),
+( 14, 123456789, 'Occupational Health and Safety', '2024-12-04', 2100.60),
+( 15, 123456789, 'Occupational Health and Safety', '2024-12-05', 1700.40),
+( 16, 123456789, 'Occupational Health and Safety', '2024-12-06', 1500.00),
+( 17, 123456789, 'Occupational Health and Safety', '2024-12-07', 2300.75),
+( 18, 123456789, 'Occupational Health and Safety', '2024-12-08', 2600.80),
+( 19, 123456789, 'Occupational Health and Safety', '2024-12-09', 1950.60),
+( 20, 123456789, 'Occupational Health and Safety', '2024-12-10', 2500.25),
+( 21, 123456789, 'Occupational Health and Safety', '2024-12-11', 1600.30),
+( 22, 123456789, 'Occupational Health and Safety', '2024-12-12', 1850.50),
+( 23, 123456789, 'Occupational Health and Safety', '2024-12-13', 2150.75),
+( 24, 123456789, 'Occupational Health and Safety', '2024-12-14', 1700.40),
+( 25, 123456789, 'Occupational Health and Safety', '2024-12-15', 1900.60),
+( 26, 123456789, 'Occupational Health and Safety', '2024-12-16', 2100.00),
+( 27, 123456789, 'Occupational Health and Safety', '2024-12-17', 2600.75),
+( 28, 123456789, 'Occupational Health and Safety', '2024-12-18', 1750.40),
+( 29, 123456789, 'Occupational Health and Safety', '2024-12-19', 2050.25),
+( 30, 123456789, 'Occupational Health and Safety', '2024-12-20', 2400.80),
+( 31, 123456789, 'Occupational Health and Safety', '2024-12-21', 1950.30),
+( 32, 123456789, 'Occupational Health and Safety', '2024-12-22', 2200.75),
+( 33, 123456789, 'Occupational Health and Safety', '2024-12-23', 2500.60),
+( 34, 123456789, 'Occupational Health and Safety', '2024-12-24', 1950.40),
+( 35, 123456789, 'Occupational Health and Safety', '2024-12-25', 2250.00),
+( 36, 123456789, 'Occupational Health and Safety', '2024-12-26', 1800.90),
+( 37, 123456789, 'Occupational Health and Safety', '2024-12-27', 2000.60),
+( 38, 123456789, 'Occupational Health and Safety', '2024-12-28', 1900.50),
+( 39, 123456789, 'Occupational Health and Safety', '2024-12-29', 2500.00),
+( 40, 123456789, 'Occupational Health and Safety', '2024-12-30', 2700.50),
+( 1, 123456789, 'Occupational Health and Safety', '2024-12-31', 2900.00),
+( 2, 123456789, 'Occupational Health and Safety', '2025-01-01', 1900.75),
+( 3, 123456789, 'Occupational Health and Safety', '2025-01-02', 1800.25),
+( 4, 123456789, 'Occupational Health and Safety', '2025-01-03', 1750.50),
+( 5, 123456789, 'Occupational Health and Safety', '2025-01-04', 2100.60),
+( 6, 123456789, 'Occupational Health and Safety', '2025-01-05', 2400.75),
+( 7, 123456789, 'Occupational Health and Safety', '2025-01-06', 2600.40),
+( 8, 123456789, 'Occupational Health and Safety', '2025-01-07', 1900.30),
+( 9, 123456789, 'Occupational Health and Safety', '2025-01-08', 2000.80),
+( 10, 123456789, 'Occupational Health and Safety', '2025-01-09', 2150.60),
+( 11, 123456789, 'Occupational Health and Safety', '2025-01-10', 1700.25),
+( 12, 123456789, 'Occupational Health and Safety', '2025-01-11', 1950.50),
+( 13, 123456789, 'Occupational Health and Safety', '2025-01-12', 2500.75),
+( 14, 123456789, 'Occupational Health and Safety', '2025-01-13', 1800.30),
+( 15, 123456789, 'Occupational Health and Safety', '2025-01-14', 2200.40),
+( 16, 123456789, 'Occupational Health and Safety', '2025-01-15', 1900.25),
+( 17, 123456789, 'Occupational Health and Safety', '2025-01-16', 2050.60),
+( 18, 123456789, 'Occupational Health and Safety', '2025-01-17', 2300.75),
+( 19, 123456789, 'Occupational Health and Safety', '2025-01-18', 2450.50),
+( 20, 123456789, 'Occupational Health and Safety', '2025-01-19', 2900.00);
+
+
+INSERT INTO Servicio (idServicio, descripcion, valorHoras) 
+VALUES 
+(1, 'Evaluación de riesgos laborales', 5),
+(2, 'Capacitación en seguridad laboral', 3),
+(3, 'Inspección de condiciones de trabajo', 8),
+(4, 'Diseño de planes de emergencia', 6),
+(5, 'Implementación de protocolos de seguridad', 4),
+(6, 'Auditoría de seguridad en el trabajo', 7),
+(7, 'Evaluación ergonómica', 5),
+(8, 'Capacitación en manejo de materiales peligrosos', 6),
+(9, 'Monitoreo ambiental laboral', 7),
+(10, 'Diseño de programas de salud ocupacional', 6),
+(11, 'Gestión de incidentes laborales', 8),
+(12, 'Implementación de equipos de protección personal', 7),
+(13, 'Capacitación en primeros auxilios', 5),
+(14, 'Elaboración de análisis de riesgos', 4),
+(15, 'Auditoría de salud ocupacional', 8),
+(16, 'Diseño de sistemas contra incendios', 7),
+(17, 'Evaluación de conformidad legal en seguridad laboral', 9),
+(18, 'Automatización de procesos de seguridad', 6),
+(19, 'Capacitación en normatividad laboral', 7),
+(20, 'Elaboración de manuales de seguridad', 5),
+(21, 'Monitoreo de exposición a riesgos químicos', 6),
+(22, 'Implementación de sistemas de gestión en SST', 7);
+
+
+INSERT INTO Empleado (cedula, nombre, apellido, telefono, cargo) 
+VALUES 
+(101, 'Carlos', 'Sánchez', 3012345678, 'Consultor'),
+(102, 'María', 'López', 3023456789, 'Soporte'),
+(103, 'Juan', 'Pérez', 3034567890, 'Analista'),
+(104, 'Ana', 'Martínez', 3045678901, 'Consultor'),
+(105, 'Luis', 'García', 3056789012, 'Soporte'),
+(106, 'Claudia', 'Hernández', 3067890123, 'Analista'),
+(107, 'Jorge', 'Torres', 3078901234, 'Consultor'),
+(108, 'Sofía', 'Vargas', 3089012345, 'Ingeniero'),
+(109, 'Pedro', 'Díaz', 3090123456, 'Soporte'),
+(110, 'Laura', 'Morales', 3101234567, 'Analista'),
+(111, 'Ricardo', 'Jiménez', 3112345678, 'Ingeniero'),
+(112, 'Adriana', 'Suárez', 3123456789, 'Consultor'),
+(113, 'José', 'Rodríguez', 3134567890, 'Soporte'),
+(114, 'Carmen', 'Ramírez', 3145678901, 'Analista'),
+(115, 'Martín', 'Cano', 3156789012, 'Consultor'),
+(116, 'Paola', 'Gómez', 3167890123, 'Soporte'),
+(117, 'Elena', 'Vega', 3178901234, 'Analista'),
+(118, 'Raúl', 'Ortiz', 3189012345, 'Ingeniero'),
+(119, 'Isabel', 'Castillo', 3190123456, 'Consultor'),
+(120, 'Antonio', 'Rojas', 3201234567, 'Soporte');
+
+
+INSERT INTO RegistroEmpleado (idRegistro, email, contraseña, confirmContraseña, cedula) 
+VALUES 
+(1, 'carlos.sanchez@empresa.com', 'emp1234', 'emp1234', 101),
+(2, 'maria.lopez@empresa.com', 'soporte123', 'soporte123', 102),
+(3, 'juan.perez@empresa.com', 'analista123', 'analista123', 103),
+(4, 'ana.martinez@empresa.com', 'consultor123', 'consultor123', 104),
+(5, 'luis.garcia@empresa.com', 'soporte1234', 'soporte1234', 105),
+(6, 'claudia.hernandez@empresa.com', 'analista456', 'analista456', 106),
+(7, 'jorge.torres@empresa.com', 'consultor456', 'consultor456', 107),
+(8, 'sofia.vargas@empresa.com', 'ingeniero789', 'ingeniero789', 108),
+(9, 'pedro.diaz@empresa.com', 'soporte567', 'soporte567', 109),
+(10, 'laura.morales@empresa.com', 'analista789', 'analista789', 110),
+(11, 'ricardo.jimenez@empresa.com', 'ingeniero321', 'ingeniero321', 111),
+(12, 'adriana.suarez@empresa.com', 'consultor678', 'consultor678', 112),
+(13, 'jose.rodriguez@empresa.com', 'soporte890', 'soporte890', 113),
+(14, 'carmen.ramirez@empresa.com', 'analista012', 'analista012', 114),
+(15, 'martin.cano@empresa.com', 'consultor345', 'consultor345', 115),
+(16, 'paola.gomez@empresa.com', 'soporte1235', 'soporte1235', 116),
+(17, 'elena.vega@empresa.com', 'analista678', 'analista678', 117),
+(18, 'raul.ortiz@empresa.com', 'ingeniero456', 'ingeniero456', 118),
+(19, 'isabel.castillo@empresa.com', 'consultor987', 'consultor987', 119),
+(20, 'antonio.rojas@empresa.com', 'soporte654', 'soporte654', 120);
+
+
+
+
+INSERT INTO DetalleServicio ( idFactura, idServicio, idEmpleado,
+ fechaServicio, subTotalServicio, ivaServicio) 
+VALUES
+
+
+
+( 1, 1, 101, '2024-11-02', 200.00, 38.00),  -- Detalle 1
+( 1, 2, 101, '2024-11-02', 300.00, 57.00),  -- Detalle 2
+( 1, 3, 101, '2024-11-02', 339.33, 64.47),  -- Detalle 3
+( 2, 4, 102, '2024-11-11', 300.00, 57.00),  -- Detalle 1
+( 2, 5, 102, '2024-11-11', 450.00, 85.50),  -- Detalle 2
+( 2, 6, 102, '2024-11-11', 493.50, 93.77),  -- Detalle 3
+( 3, 7, 103, '2024-11-12', 400.00, 76.00),  -- Detalle 1
+( 3, 8, 103, '2024-11-12', 500.00, 95.00),  -- Detalle 2
+( 3, 9, 104, '2024-11-12', 600.75, 114.14),  -- Detalle 3
+( 4, 10, 110, '2024-11-13', 500.00, 95.00),  -- Detalle 1
+( 4, 11, 104, '2024-11-13', 750.00, 142.50),  -- Detalle 2
+( 4, 12, 104, '2024-11-13', 1000.25, 190.05),  -- Detalle 3
+( 5, 13, 105, '2024-11-14', 300.00, 57.00),  -- Detalle 1
+( 5, 14, 105, '2024-11-14', 400.00, 76.00),  -- Detalle 2
+( 5, 15, 105, '2024-11-14', 500.80, 95.15),  -- Detalle 3
+( 6, 16, 105, '2024-11-15', 600.00, 114.00),  -- Detalle 1
+( 6, 17, 104, '2024-11-15', 1000.00, 190.00),  -- Detalle 2
+( 6, 18, 114, '2024-11-15', 1400.45, 266.09),  -- Detalle 3
+( 7, 19, 114, '2024-11-16', 500.00, 95.00),  -- Detalle 1
+( 7, 20, 120, '2024-11-16', 600.00, 114.00),  -- Detalle 2
+( 7, 21, 101, '2024-11-16', 500.30, 95.06),  -- Detalle 3
+( 8, 1, 101, '2024-11-17', 700.00, 133.00),  -- Detalle 1
+( 8, 2, 103, '2024-11-17', 800.00, 152.00),  -- Detalle 2
+( 8, 1, 103, '2024-11-17', 350.60, 66.60),  -- Detalle 3
+( 9, 20, 105, '2024-11-18', 700.00, 133.00),  -- Detalle 1
+( 9, 19, 106, '2024-11-18', 800.00, 152.00),  -- Detalle 2
+( 9, 2, 107, '2024-11-18', 600.50, 114.10),  -- Detalle 3
+( 10, 8, 108, '2024-11-19', 850.00, 161.50),  -- Detalle 1
+( 10, 9, 109, '2024-11-19', 900.00, 171.00),  -- Detalle 2
+( 10, 3, 103, '2024-11-19', 1000.00, 190.00),  -- Detalle 3
+( 11, 1, 111, '2024-11-20', 600.00, 114.00),  -- Detalle 1
+( 11, 3, 112, '2024-11-20', 500.00, 95.00),  -- Detalle 2
+( 11, 19, 113, '2024-11-20', 700.90, 133.18),  -- Detalle 3
+( 12, 18, 117, '2024-11-21', 500.00, 95.00),  -- Detalle 1
+( 12, 3, 117, '2024-11-21', 600.00, 114.00),  -- Detalle 2
+( 12, 6, 120, '2024-11-21', 800.00, 152.00),  -- Detalle 3
+( 13, 7, 103, '2024-11-22', 600.00, 114.00),  -- Detalle 1
+( 13, 8, 104, '2024-11-22', 500.00, 95.00),  -- Detalle 2
+( 13, 9, 105, '2024-11-22', 650.40, 123.58),  -- Detalle 3
+( 14, 7, 105, '2024-11-23', 750.00, 142.50),  -- Detalle 1
+( 14, 4, 105, '2024-11-23', 800.00, 152.00),  -- Detalle 2
+( 14, 4, 102, '2024-11-23', 650.10, 123.52),  -- Detalle 3
+( 15, 3, 103, '2024-11-24', 850.00, 161.50),  -- Detalle 1
+( 15, 4, 104, '2024-11-24', 900.00, 171.00),  -- Detalle 2
+( 15, 5, 105, '2024-11-24', 650.75, 123.64),  -- Detalle 3
+( 16, 6, 106, '2024-11-25', 900.00, 171.00),  -- Detalle 1
+( 16, 7, 107, '2024-11-25', 1000.00, 190.00),  -- Detalle 2
+( 16, 4, 118, '2024-11-25', 700.80, 133.15),  -- Detalle 3
+( 17, 4, 119, '2024-11-26', 700.00, 133.00),  -- Detalle 1
+( 17, 5, 110, '2024-11-26', 600.00, 114.00),  -- Detalle 2
+( 17, 5, 111, '2024-11-26', 650.60, 123.60),  -- Detalle 3
+( 18, 2, 112, '2024-11-27', 750.00, 142.50),  -- Detalle 1
+( 18, 5, 113, '2024-11-27', 800.00, 152.00),  -- Detalle 2
+( 18, 8, 114, '2024-11-27', 500.25, 95.05),  -- Detalle 3
+( 19, 11, 115, '2024-11-28', 500.00, 95.00),  -- Detalle 1
+(19, 11, 116, '2024-11-28', 700.00, 133.00),  -- Detalle 2
+(19, 11, 117, '2024-11-28', 300.00, 57.00),  -- Detalle 3
+( 20, 18, 118, '2024-11-29', 850.00, 161.50),  -- Detalle 1
+( 20, 19, 119, '2024-11-29', 900.00, 171.00),  -- Detalle 2
+( 20, 6, 106, '2024-11-29', 550.75, 104.65),  -- Detalle 3
+(21, 6, 106, '2024-11-30', 700.00, 133.00),  -- Detalle 1
+( 21, 2, 102, '2024-11-30', 600.00, 114.00),  -- Detalle 2
+( 21, 22, 103, '2024-11-30', 550.00, 104.50),  -- Detalle 3
+( 22, 20, 104, '2024-12-01', 750.00, 142.50),  -- Detalle 1
+( 22, 5, 105, '2024-12-01', 750.00, 142.50),  -- Detalle 2
+( 22, 6, 106, '2024-12-01', 400.50, 76.10),  -- Detalle 3
+( 23, 7, 107, '2024-12-02', 900.00, 171.00),  -- Detalle 1
+( 23, 20, 108, '2024-12-02', 800.00, 152.00),  -- Detalle 2
+( 23, 6, 109, '2024-12-02', 700.75, 133.15),  -- Detalle 3
+( 24, 2, 107, '2024-12-03', 800.00, 152.00),  -- Detalle 1
+( 24, 11, 108, '2024-12-03', 900.00, 171.00),  -- Detalle 2
+( 24, 12, 101, '2024-12-03', 400.60, 76.11),  -- Detalle 3
+( 25, 14, 103, '2024-12-04', 850.00, 161.50),  -- Detalle 1
+( 25, 14, 104, '2024-12-04', 700.00, 133.00),  -- Detalle 2
+( 25, 8, 107, '2024-12-04', 600.60, 114.11),  -- Detalle 3
+( 26, 6, 106, '2024-12-05', 600.00, 114.00),  -- Detalle 1
+( 26, 7, 101, '2024-12-05', 500.00, 95.00),  -- Detalle 2
+( 26, 8, 101, '2024-12-05', 500.30, 95.06),  -- Detalle 3
+( 27, 9, 111, '2024-12-06', 700.00, 133.00),  -- Detalle 1
+( 27, 8, 111, '2024-12-06', 750.00, 142.50),  -- Detalle 2
+( 27, 1, 111, '2024-12-06', 500.50, 95.10),  -- Detalle 3
+( 28, 2, 120, '2024-12-07', 650.00, 123.50),  -- Detalle 1
+( 28, 3, 120, '2024-12-07', 600.00, 114.00),  -- Detalle 2
+( 28, 4, 120, '2024-12-07', 500.25, 95.05),  -- Detalle 3
+( 29, 8, 111, '2024-12-08', 800.00, 152.00),  -- Detalle 1
+( 29, 6, 114, '2024-12-08', 700.00, 133.00),  -- Detalle 2
+( 29, 7, 114, '2024-12-08', 550.75, 104.65),  -- Detalle 3
+( 30, 8, 114, '2024-12-09', 900.00, 171.00),  -- Detalle 1
+( 30, 9, 103, '2024-12-09', 700.00, 133.00),  -- Detalle 2
+( 30, 10, 101, '2024-12-09', 650.00, 123.50),  -- Detalle 
+( 31, 11, 109, '2024-12-10', 650.00, 123.50),  -- Detalle 1
+( 31, 12, 109, '2024-12-10', 750.00, 142.50),  -- Detalle 2
+( 31, 13, 103, '2024-12-10', 450.00, 85.50),  -- Detalle 3
+( 32, 14, 104, '2024-12-11', 800.00, 152.00),  -- Detalle 1
+( 32, 15, 105, '2024-12-11', 900.00, 171.00),  -- Detalle 2
+( 32, 16, 106, '2024-12-11', 500.75, 95.15), -- Detalle 3
+( 33, 17, 107, '2024-12-12', 900.00, 171.00),  -- Detalle 1
+( 33, 18, 108, '2024-12-12', 1100.00, 209.00),  -- Detalle 2
+( 33, 19, 109, '2024-12-12', 500.60, 95.10),  -- Detalle 3
+( 34, 10, 101, '2024-12-13', 800.00, 152.00),  -- Detalle 1
+( 34, 20, 101, '2024-12-13', 700.00, 133.00),  -- Detalle 2
+( 34, 10, 102, '2024-12-13', 600.60, 114.11),  -- Detalle 3
+( 35, 13, 103, '2024-12-14', 650.00, 123.50),  -- Detalle 1
+( 35, 14, 104, '2024-12-14', 700.00, 133.00),  -- Detalle 2
+( 35, 15, 105, '2024-12-14', 350.40, 66.58),  -- Detalle 3
+( 36, 16, 106, '2024-12-15', 600.00, 114.00),  -- Detalle 1
+( 36, 17, 107, '2024-12-15', 500.00, 95.00),  -- Detalle 2
+( 36, 18, 108, '2024-12-15', 400.00, 76.00),  -- Detalle 3
+( 37, 14, 109, '2024-12-16', 850.00, 161.50),  -- Detalle 1
+( 37, 10, 110, '2024-12-16', 950.00, 180.50),  -- Detalle 2
+( 37, 11, 111, '2024-12-16', 500.75, 95.14),  -- Detalle 3
+( 38, 12, 112, '2024-12-17', 1000.00, 190.00),  -- Detalle 1
+( 38, 13, 113, '2024-12-17', 900.00, 171.00),  -- Detalle 2
+( 38, 14, 114, '2024-12-17', 700.80, 133.15), -- Detalle 3
+( 39, 15, 115, '2024-12-18', 850.00, 161.50),  -- Detalle 1
+( 39, 16, 116, '2024-12-18', 600.00, 114.00),  -- Detalle 2
+( 39, 17, 117, '2024-12-18', 500.60, 95.10),  -- Detalle 3
+( 40, 18, 118, '2024-12-19', 950.00, 180.50),  -- Detalle 1
+( 40, 19, 119, '2024-12-19', 800.00, 152.00),  -- Detalle 2
+( 40, 20, 120, '2024-12-19', 750.25, 142.53),  -- Detalle 3
+( 41, 11, 101, '2024-12-20', 600.00, 114.00),  -- Detalle 1
+( 41, 12, 102, '2024-12-20', 500.00, 95.00),  -- Detalle 2
+( 41, 13, 103, '2024-12-20', 500.30, 95.06),  -- Detalle 3
+( 42, 14, 104, '2024-12-21', 800.00, 152.00),  -- Detalle 1
+( 42, 15, 105, '2024-12-21', 600.00, 114.00),  -- Detalle 2
+( 42, 16, 106, '2024-12-21', 450.50, 85.60),  -- Detalle 3
+( 43, 17, 107, '2024-12-22', 950.00, 180.50),  -- Detalle 1
+( 43, 18, 108, '2024-12-22', 700.00, 133.00),  -- Detalle 2
+( 43, 19, 109, '2024-12-22', 500.75, 95.15),  -- Detalle 3
+( 44, 10, 101, '2024-12-23', 700.00, 133.00),  -- Detalle 1
+( 44, 11, 101, '2024-12-23', 500.00, 95.00),  -- Detalle 2
+( 44, 12, 112, '2024-12-23', 500.40, 95.08),  -- Detalle 3
+( 45, 13, 113, '2024-12-24', 800.00, 152.00),  -- Detalle 1
+( 45, 14, 114, '2024-12-24', 600.00, 114.00),  -- Detalle 2
+( 45, 15, 115, '2024-12-24', 500.60, 95.10),  -- Detalle 3
+( 46, 16, 116, '2024-12-25', 900.00, 171.00),  -- Detalle 1
+( 46, 17, 117, '2024-12-25', 700.00, 133.00),  -- Detalle 2
+( 46, 18, 118, '2024-12-25', 500.00, 95.00),  -- Detalle 3
+( 47, 19, 119, '2024-12-26', 1100.00, 209.00),  -- Detalle 1
+( 47, 14, 120, '2024-12-26', 800.00, 152.00),  -- Detalle 2
+( 47, 1, 101, '2024-12-26', 700.75, 133.15),  -- Detalle 3
+( 48, 2, 102, '2024-12-27', 800.00, 152.00),  -- Detalle 1
+( 48, 3, 103, '2024-12-27', 600.00, 114.00),  -- Detalle 2
+( 48, 4, 114, '2024-12-27', 350.40, 66.57),  -- Detalle 3
+( 49, 5, 115, '2024-12-28', 950.00, 180.50),  -- Detalle 1
+( 49, 6, 116, '2024-12-28', 600.00, 114.00),  -- Detalle 2
+( 49, 7, 117, '2024-12-28', 500.25, 95.05),  -- Detalle 3
+( 50, 8, 118, '2024-12-29', 1000.00, 190.00),  -- Detalle 1
+( 50, 9, 119, '2024-12-29', 800.00, 152.00),  -- Detalle 2
+( 50, 15, 110, '2024-12-29', 600.80, 114.15),  -- Detalle 3
+( 51, 11, 111, '2024-12-30', 1300.00, 247.00),  -- Detalle 1
+( 51, 12, 102, '2024-12-30', 1000.00, 190.00),  -- Detalle 2
+( 51, 13, 103, '2024-12-30', 800.55, 152.09),  -- Detalle 3
+( 52, 14, 104, '2024-12-31', 1200.00, 228.00),  -- Detalle 1
+( 52, 15, 105, '2024-12-31', 700.00, 133.00),  -- Detalle 2
+( 52, 16, 106, '2024-12-31', 300.75, 57.15),  -- Detalle 3
+( 53, 17, 117, '2025-01-01', 800.00, 152.00),  -- Detalle 1
+( 53, 18, 118, '2025-01-01', 600.00, 114.00),  -- Detalle 2
+( 53, 19, 119, '2025-01-01', 400.90, 76.18),  -- Detalle 3
+( 54, 16, 110, '2025-01-02', 1200.00, 228.00),  -- Detalle 1
+( 54, 11, 111, '2025-01-02', 900.00, 171.00),  -- Detalle 2
+( 54, 12, 112, '2025-01-02', 400.60, 76.11),  -- Detalle 3
+( 55, 13, 113, '2025-01-03', 1500.00, 285.00),  -- Detalle 1
+( 55, 14, 114, '2025-01-03', 900.00, 171.00),  -- Detalle 2
+( 55, 15, 115, '2025-01-03', 400.45, 76.09),  -- Detalle 3
+( 56, 16, 116, '2025-01-04', 1300.00, 247.00),  -- Detalle 1
+( 56, 17, 117, '2025-01-04', 1200.00, 228.00),  -- Detalle 2
+( 56, 18, 118, '2025-01-04', 605.80, 115.10),  -- Detalle 3
+( 57, 1, 111, '2025-01-05', 1000.00, 190.00),  -- Detalle 1
+( 57, 17, 105, '2025-01-05', 800.00, 152.00),  -- Detalle 2
+( 57, 17, 101, '2025-01-05', 404.50, 76.86),  -- Detalle 3
+( 58, 1, 101, '2025-01-06', 1200.00, 228.00),  -- Detalle 1
+( 58, 13, 103, '2025-01-06', 900.00, 171.00),  -- Detalle 2
+( 58, 14, 104, '2025-01-06', 400.00, 76.00),  -- Detalle 3
+( 59, 15, 105, '2025-01-07', 1400.00, 266.00),  -- Detalle 1
+( 59, 16, 106, '2025-01-07', 1000.00, 190.00),  -- Detalle 2
+( 59, 17, 107, '2025-01-07', 750.10, 142.52),  -- Detalle 3
+( 60, 18, 108, '2025-01-08', 1100.00, 209.00),  -- Detalle 1
+( 60, 19, 109, '2025-01-08', 900.00, 171.00),  -- Detalle 2
+( 60, 18, 110, '2025-01-08', 305.80, 58.10),  -- Detalle
+( 61, 11, 111, '2025-01-09', 1500.00, 285.00),  -- Detalle 1
+( 61, 12, 112, '2025-01-09', 1100.00, 209.00),  -- Detalle 2
+( 61, 13, 113, '2025-01-09', 650.30, 123.56),  -- Detalle 3
+( 62, 1, 114, '2025-01-10', 1400.00, 266.00),  -- Detalle 1
+( 62, 15, 115, '2025-01-10', 900.00, 171.00),  -- Detalle 2
+( 62, 16, 116, '2025-01-10', 450.20, 85.54),  -- Detalle 3
+( 63, 18, 117, '2025-01-11', 1000.00, 190.00),  -- Detalle 1
+( 63, 8, 118, '2025-01-11', 700.00, 133.00),  -- Detalle 2
+( 63, 19, 119, '2025-01-11', 500.60, 95.10),  -- Detalle 3
+( 64, 19, 110, '2025-01-12', 1600.00, 304.00),  -- Detalle 1
+( 64, 11, 101, '2025-01-12', 1300.00, 247.00),  -- Detalle 2
+( 64, 12, 102, '2025-01-12', 800.70, 152.13), -- Detalle 3
+( 65, 13, 103, '2025-01-13', 1400.00, 266.00),  -- Detalle 1
+( 65, 14, 104, '2025-01-13', 1000.00, 190.00),  -- Detalle 2
+( 65, 15, 105, '2025-01-13', 500.90, 95.18),
+( 66, 19, 106, '2025-01-14', 1500.00, 285.00),  -- Detalle 1
+( 66, 17, 107, '2025-01-14', 1200.00, 228.00),  -- Detalle 2
+( 66, 18, 108, '2025-01-14', 700.50, 133.10),  -- Detalle 3
+( 67, 19, 109, '2025-01-15', 1000.00, 190.00),  -- Detalle 1
+( 67, 2, 104, '2025-01-15', 700.00, 133.00),  -- Detalle 2
+( 67, 20, 101, '2025-01-15', 505.70, 95.09),  -- Detalle 3
+( 68, 2, 102, '2025-01-16', 1700.00, 323.00),  -- Detalle 1
+( 68, 3, 103, '2025-01-16', 1500.00, 285.00),  -- Detalle 2
+( 68, 4, 104, '2025-01-16', 1000.90, 190.17),  -- Detalle 3
+( 69, 5, 105, '2025-01-17', 1300.00, 247.00),  -- Detalle 1
+( 69, 6, 106, '2025-01-17', 900.00, 171.00),  -- Detalle 2
+( 69, 7, 107, '2025-01-17', 650.30, 123.55),  -- Detalle 3
+( 70, 8, 108, '2025-01-18', 1400.00, 266.00),  -- Detalle 1
+( 70, 9, 109, '2025-01-18', 1000.00, 190.00),  -- Detalle 2
+( 70, 10, 110, '2025-01-18', 550.60, 104.62),  -- Detalle 3
+( 71, 11, 111, '2025-01-10', 1428.78, 271.46),
+( 72, 14, 114, '2025-01-11', 1450.21, 275.53),
+( 73, 17, 117, '2025-01-12', 1600.42, 304.08),
+( 74, 20, 120, '2025-01-13', 1200.68, 228.14),
+( 75, 3, 103, '2025-01-14', 1800.75, 342.14),
+( 76, 6, 106, '2025-01-15', 1400.00, 266.00),
+( 77, 9, 109, '2025-01-16', 2200.50, 418.10),
+( 78, 2, 102, '2025-01-17', 1600.25, 304.05),
+( 79, 5, 105, '2025-01-18', 1750.90, 332.66),
+( 80, 4, 101, '2025-01-19', 1900.40, 361.08);
+
+
+
+
+INSERT INTO ActividadEconomica (idActividadEconomica, codigoActividad, descripcionActividad) 
+VALUES 
+(1, 6201, 'Desarrollo de software y consultoría tecnológica'),
+(2, 7010, 'Servicios de consultoría en gestión empresarial'),
+(3, 4711, 'Comercio al por menor en establecimientos no especializados'),
+(4, 5610, 'Actividades de restaurantes y de servicio móvil de comidas'),
+(5, 4922, 'Transporte de mercancías por carretera'),
+(6, 4511, 'Venta de vehículos automotores nuevos y usados'),
+(7, 9602, 'Actividades de peluquería y otros tratamientos de belleza'),
+(8, 8610, 'Actividades hospitalarias'),
+(9, 5510, 'Servicios de alojamiento en hoteles y similares'),
+(10, 8559, 'Otras actividades de enseñanza no clasificadas en otra parte'),
+(11, 9311, 'Gestión de instalaciones deportivas'),
+(12, 0113, 'Cultivo de hortalizas, raíces y tubérculos'),
+(13, 6202, 'Consultoría de tecnología de la información'),
+(14, 8612, 'Servicios médicos especializados'),
+(15, 6810, 'Actividades inmobiliarias realizadas con bienes propios o arrendados'),
+(16, 4512, 'Mantenimiento y reparación de vehículos automotores'),
+(17, 8690, 'Otras actividades de atención médica'),
+(18, 4721, 'Comercio al por menor de productos alimenticios'),
+(19, 4649, 'Comercio al por mayor de otros artículos de uso doméstico'),
+(20, 7310, 'Publicidad y estudios de mercado'),
+(21, 5621, 'Provisión de comidas por encargo'),
+(22, 1104, 'Elaboración de bebidas no alcohólicas y aguas minerales'),
+(23, 0112, 'Cultivo de cereales y otros cultivos no perennes'),
+(24, 0220, 'Explotación forestal'),
+(25, 4321, 'Instalaciones eléctricas'),
+(26, 3312, 'Reparación de maquinaria'),
+(27, 1812, 'Servicios relacionados con la impresión'),
+(28, 9001, 'Actividades de creación artística y literaria'),
+(29, 8890, 'Otras actividades de asistencia social sin alojamiento'),
+(30, 6209, 'Otros servicios relacionados con las tecnologías de la información'),
+(31, 6619, 'Otras actividades auxiliares de servicios financieros'),
+(32, 7210, 'Investigación y desarrollo experimental en ciencias naturales'),
+(33, 8299, 'Otras actividades de servicios de apoyo a las empresas'),
+(34, 4722, 'Comercio al por menor de productos farmacéuticos y medicinales'),
+(35, 5629, 'Otros servicios de comidas'),
+(36, 8010, 'Actividades de seguridad privada'),
+(37, 5511, 'Alojamientos turísticos no clasificados en otra parte'),
+(38, 9601, 'Lavandería y limpieza en seco'),
+(39, 8421, 'Relaciones exteriores y organismos de desarrollo'),
+(40, 5010, 'Transporte marítimo de pasajeros'),
+(41, 7911, 'Actividades de agencias de viajes'),
+(42, 4729, 'Comercio al por menor de otros productos no especializados'),
+(43, 0321, 'Acuicultura marina'),
+(44, 0322, 'Acuicultura en agua dulce'),
+(45, 9319, 'Otras actividades deportivas'),
+(46, 5229, 'Otras actividades anexas al transporte'),
+(47, 4610, 'Intermediarios del comercio'),
+(48, 7729, 'Alquiler de bienes personales y domésticos no clasificados'),
+(49, 0121, 'Cultivo de uvas'),
+(50, 1071, 'Fabricación de productos de panadería');
+
+
+
+
+
+INSERT INTO Clasificacion (idClasificacion, tipoClasificacion, cantidadEmpleados, descripcion, idActividadEconomica, idCliente) 
+VALUES 
+(1, 'Microempresa', 10, 'Empresa de tecnología pequeña', 1, 1),
+(2, 'Mediana Empresa', 50, 'Empresa de servicios en crecimiento', 2, 2),
+(3, 'Microempresa', 8, 'Tienda local de alimentos', 3, 3),
+(4, 'Gran Empresa', 500, 'Corporación multinacional de manufactura', 4, 4),
+(5, 'Pequeña Empresa', 20, 'Consultoría en recursos humanos', 5, 5),
+(6, 'Microempresa', 5, 'Startup de diseño gráfico', 6, 6),
+(7, 'Mediana Empresa', 60, 'Fabricante de muebles regional', 7, 7),
+(8, 'Gran Empresa', 300, 'Cadena nacional de supermercados', 8, 8),
+(9, 'Pequeña Empresa', 15, 'Agencia de marketing digital', 9, 9),
+(10, 'Microempresa', 3, 'Negocio de desarrollo web freelance', 10, 10),
+(11, 'Mediana Empresa', 75, 'Distribuidor de insumos agrícolas', 11, 11),
+(12, 'Gran Empresa', 1000, 'Operador global de transporte y logística', 12, 12),
+(13, 'Pequeña Empresa', 12, 'Empresa de reparación de electrodomésticos', 13, 13),
+(14, 'Microempresa', 4, 'Cafetería local', 14, 14),--
+(15, 'Mediana Empresa', 90, 'Proveedor de servicios de impresión industrial', 15, 15),
+(16, 'Gran Empresa', 1200, 'Compañía minera internacional', 16, 16),
+(17, 'Microempresa', 2, 'Fotógrafo independiente', 17, 17),
+(18, 'Pequeña Empresa', 25, 'Academia de idiomas', 18, 18),
+(19, 'Mediana Empresa', 65, 'Distribuidor mayorista de alimentos', 19, 19),
+(20, 'Gran Empresa', 800, 'Productor de bienes de consumo masivo', 20, 20),
+(21, 'Pequeña Empresa', 18, 'Centro de bienestar y yoga', 21, 21),
+(22, 'Microempresa', 7, 'Negocio de servicios de limpieza', 22, 22),
+(23, 'Mediana Empresa', 55, 'Productora audiovisual', 23, 23),
+(24, 'Gran Empresa', 1500, 'Fabricante de automóviles', 24, 24),
+(25, 'Microempresa', 6, 'Carpintería artesanal', 25, 25),
+(26, 'Pequeña Empresa', 30, 'Empresa de catering', 26, 26),
+(27, 'Mediana Empresa', 80, 'Proveedor de servicios de TI', 27, 27),
+(28, 'Gran Empresa', 2000, 'Conglomerado de tecnología', 28, 28),
+(29, 'Pequeña Empresa', 22, 'Consultoría ambiental', 29, 29),
+(30, 'Microempresa', 9, 'Tienda de artesanías locales', 30, 30),
+(31, 'Mediana Empresa', 70, 'Distribuidor de equipos médicos', 31, 31),
+(32, 'Gran Empresa', 3000, 'Compañía farmacéutica internacional', 32, 32),
+(33, 'Pequeña Empresa', 19, 'Agencia de eventos corporativos', 33, 33),
+(34, 'Microempresa', 4, 'Servicios de traducción', 34, 34),
+(35, 'Mediana Empresa', 95, 'Empresa de desarrollo de software', 35, 35),
+(36, 'Gran Empresa', 2500, 'Operador de telecomunicaciones', 36, 36),
+(37, 'Pequeña Empresa', 14, 'Proveedor de soluciones energéticas', 37, 37),
+(38, 'Microempresa', 5, 'Negocio de diseño de interiores', 38, 38),
+(39, 'Mediana Empresa', 60, 'Distribuidor de materiales de construcción', 39, 39),
+(40, 'Gran Empresa', 1800, 'Corporación de servicios financieros', 40, 40);
+
+
+
+
+INSERT INTO Garantia ( descripcion, fechaIni, fechaFin, idFactura) 
+VALUES 
+( 'Garantia contra sanciones', '2024-11-01', '2025-04-29', 1),
+( 'Garantia contra sanciones', '2024-11-02', '2025-04-30', 2),
+( 'Garantia contra sanciones', '2024-11-03', '2025-05-01', 3),
+( 'Garantia contra sanciones', '2024-11-04', '2025-05-02', 4),
+( 'Garantia contra sanciones', '2024-11-05', '2025-05-03', 5),
+( 'Garantia contra sanciones', '2024-11-06', '2025-05-04', 6),
+( 'Garantia contra sanciones', '2024-11-07', '2025-05-05', 7),
+( 'Garantia contra sanciones', '2024-11-08', '2025-05-06', 8),
+( 'Garantia contra sanciones', '2024-11-09', '2025-05-07', 9),
+( 'Garantia contra sanciones', '2024-11-10', '2025-05-08', 10),
+( 'Garantia contra sanciones', '2024-11-11', '2025-05-09', 11),
+('Garantia contra sanciones', '2024-11-12', '2025-05-10', 12),
+( 'Garantia contra sanciones', '2024-11-13', '2025-05-11', 13),
+( 'Garantia contra sanciones', '2024-11-14', '2025-05-12', 14),
+( 'Garantia contra sanciones', '2024-11-15', '2025-05-13', 15),
+( 'Garantia contra sanciones', '2024-11-16', '2025-05-14', 16),
+( 'Garantia contra sanciones', '2024-11-17', '2025-05-15', 17),
+( 'Garantia contra sanciones', '2024-11-18', '2025-05-16', 18),
+( 'Garantia contra sanciones', '2024-11-19', '2025-05-17', 19),
+( 'Garantia contra sanciones', '2024-11-20', '2025-05-18', 20),
+( 'Garantia contra sanciones', '2024-11-21', '2025-05-19', 21),
+( 'Garantia contra sanciones', '2024-11-22', '2025-05-20', 22),
+( 'Garantia contra sanciones', '2024-11-23', '2025-05-21', 23),
+( 'Garantia contra sanciones', '2024-11-24', '2025-05-22', 24),
+( 'Garantia contra sanciones', '2024-11-25', '2025-05-23', 25),
+( 'Garantia contra sanciones', '2024-11-26', '2025-05-24', 26),
+( 'Garantia contra sanciones', '2024-11-27', '2025-05-25', 27),
+( 'Garantia contra sanciones', '2024-11-28', '2025-05-26', 28),
+( 'Garantia contra sanciones', '2024-11-29', '2025-05-27', 29),
+( 'Garantia contra sanciones', '2024-11-30', '2025-05-28', 30),
+( 'Garantia contra sanciones', '2024-12-01', '2025-05-29', 31),
+( 'Garantia contra sanciones', '2024-12-02', '2025-05-30', 32),
+( 'Garantia contra sanciones', '2024-12-03', '2025-05-31', 33),
+( 'Garantia contra sanciones', '2024-12-04', '2025-06-01', 34),
+( 'Garantia contra sanciones', '2024-12-05', '2025-06-02', 35),
+( 'Garantia contra sanciones', '2024-12-06', '2025-06-03', 36),
+( 'Garantia contra sanciones', '2024-12-07', '2025-06-04', 37),
+( 'Garantia contra sanciones', '2024-12-08', '2025-06-05', 38),
+( 'Garantia contra sanciones', '2024-12-09', '2025-06-06', 39),
+( 'Garantia contra sanciones', '2024-12-10', '2025-06-07', 40),
+( 'Garantia contra sanciones', '2024-12-11', '2025-06-08', 41),
+( 'Garantia contra sanciones', '2024-12-12', '2025-06-09', 42),
+( 'Garantia contra sanciones', '2024-12-13', '2025-06-10', 43),
+( 'Garantia contra sanciones', '2024-12-14', '2025-06-11', 44),
+( 'Garantia contra sanciones', '2024-12-15', '2025-06-12', 45),
+( 'Garantia contra sanciones', '2024-12-16', '2025-06-13', 46),
+( 'Garantia contra sanciones', '2024-12-17', '2025-06-14', 47),
+( 'Garantia contra sanciones', '2024-12-18', '2025-06-15', 48),
+( 'Garantia contra sanciones', '2024-12-19', '2025-06-16', 49),
+( 'Garantia contra sanciones', '2024-12-20', '2025-06-17', 50),
+( 'Garantia contra sanciones', '2024-12-21', '2025-06-18', 51),
+( 'Garantia contra sanciones', '2024-12-22', '2025-06-19', 52),
+( 'Garantia contra sanciones', '2024-12-23', '2025-06-20', 53),
+( 'Garantia contra sanciones', '2024-12-24', '2025-06-21', 54),
+( 'Garantia contra sanciones', '2024-12-25', '2025-06-22', 55),
+( 'Garantia contra sanciones', '2024-12-26', '2025-06-23', 56),
+( 'Garantia contra sanciones', '2024-12-27', '2025-06-24', 57),
+( 'Garantia contra sanciones', '2024-12-28', '2025-06-25', 58),
+( 'Garantia contra sanciones', '2024-12-29', '2025-06-26', 59),
+( 'Garantia contra sanciones', '2024-12-30', '2025-06-27', 60),
+( 'Garantia contra sanciones', '2024-12-31', '2025-06-28', 61),
+( 'Garantia contra sanciones', '2025-01-01', '2025-06-29', 62),
+( 'Garantia contra sanciones', '2025-01-02', '2025-06-30', 63),
+( 'Garantia contra sanciones', '2025-01-03', '2025-07-01', 64),
+( 'Garantia contra sanciones', '2025-01-04', '2025-07-02', 65),
+( 'Garantia contra sanciones', '2025-01-05', '2025-07-03', 66),
+( 'Garantia contra sanciones', '2025-01-06', '2025-07-04', 67),
+( 'Garantia contra sanciones', '2025-01-07', '2025-07-05', 68),
+( 'Garantia contra sanciones', '2025-01-08', '2025-07-06', 69),
+( 'Garantia contra sanciones', '2025-01-09', '2025-07-07', 70),
+( 'Garantia contra sanciones', '2025-01-10', '2025-07-08', 71),
+( 'Garantia contra sanciones', '2025-01-11', '2025-07-09', 72),
+( 'Garantia contra sanciones', '2025-01-12', '2025-07-10', 73),
+( 'Garantia contra sanciones', '2025-01-13', '2025-07-11', 74),
+( 'Garantia contra sanciones', '2025-01-14', '2025-07-12', 75),
+( 'Garantia contra sanciones', '2025-01-15', '2025-07-13', 76),
+( 'Garantia contra sanciones', '2025-01-16', '2025-07-14', 77),
+( 'Garantia contra sanciones', '2025-01-17', '2025-07-15', 78),
+( 'Garantia contra sanciones', '2025-01-18', '2025-07-16', 79),
+( 'Garantia contra sanciones', '2025-01-19', '2025-07-17', 80);
+
+CREATE TABLE [dbo].[Auditoria](
+	[IdAuditoria] [int] IDENTITY(1,1) NOT NULL,
+	[Tipo] [char](1) NULL,
+	[Tabla] [varchar](50) NULL,
+	[Registro] [int] NULL,
+	[Campo] [varchar](50) NULL,
+	[ValorDespues] [varchar](50) NULL,
+	[Fecha] [date] NULL,
+	[Usuario] [varchar](50) NULL,
+	[ValorAntes] [varchar](50) NULL,
+	[Pc] [varchar](50) NULL,
+CONSTRAINT [PK_Auditoria] PRIMARY KEY CLUSTERED 
+(
+	[IdAuditoria] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+
+
+
+
+
+----------------------------------------------------------------------
+
+CREATE or alter TRIGGER dbo.trServicioInsert
+   ON  dbo.DetalleServicio
+   AFTER Insert 
+AS 
+BEGIN
+ 
+	SET NOCOUNT ON;
+ 
+	INSERT INTO dbo.Auditoria (Tabla, Campo, 
+	ValorAntes, ValorDespues, Usuario, Pc, Fecha, Tipo, Registro)
+	select 'dbo.DetalleServicio','idDetalle',null,inserted.idDetalle,
+	SYSTEM_USER,HOST_NAME(),GETDATE(),'I',inserted.idDetalle FROM inserted;
+ 
+		INSERT INTO dbo.Auditoria (Tabla, Campo, 
+	ValorAntes, ValorDespues, Usuario, Pc, Fecha, Tipo, Registro)
+	select 'dbo.DetalleServicio','idFactura',Null,inserted.idFactura,
+	SYSTEM_USER,HOST_NAME(),GETDATE(),'I',inserted.idDetalle FROM inserted;
+ 
+ 
+		INSERT INTO dbo.Auditoria (Tabla, Campo, 
+	ValorAntes, ValorDespues, Usuario, Pc, Fecha, Tipo, Registro)
+	select 'dbo.DetalleServicio','idServicio',Null,inserted.idServicio,
+	SYSTEM_USER,HOST_NAME(),GETDATE(),'I',inserted.idDetalle FROM inserted;
+ 
+		INSERT INTO dbo.Auditoria (Tabla, Campo,
+		ValorAntes, ValorDespues, Usuario, Pc, Fecha, Tipo, Registro)
+	select 'dbo.DetalleServicio','idEmpleado',Null,inserted.idEmpleado,
+	SYSTEM_USER,HOST_NAME(),GETDATE(),'I',inserted.idDetalle FROM inserted;
+ 
+	INSERT INTO dbo.Auditoria (Tabla, Campo, 
+	ValorAntes, ValorDespues, Usuario, Pc, Fecha, Tipo, Registro)
+	select 'dbo.DetalleServicio','fechaServicio',Null,inserted.fechaServicio,
+	SYSTEM_USER,HOST_NAME(),GETDATE(),'I',inserted.idDetalle FROM inserted;
+ 
+	INSERT INTO dbo.Auditoria (Tabla, Campo, 
+	ValorAntes, ValorDespues, Usuario, Pc, Fecha, Tipo, Registro)
+	select 'dbo.DetalleServicio','subTotalServicio',Null,inserted.subTotalServicio,
+	SYSTEM_USER,HOST_NAME(),GETDATE(),'I',inserted.idDetalle FROM inserted;
+ 
+	INSERT INTO dbo.Auditoria (Tabla, Campo, 
+	ValorAntes, ValorDespues, Usuario, Pc, Fecha, Tipo, Registro)
+	select 'dbo.DetalleServicio','ivaServicio',Null,inserted.ivaServicio,
+	SYSTEM_USER,HOST_NAME(),GETDATE(),'I',inserted.idDetalle FROM inserted;
+END
+
+
+-----------------------------------------------------------------------------------------
+
+--Se requiere crear un procedimiento para encontrar que servicios a tenido cada empleado, su valor en horas, su Total y su fecha 
+Create or alter procedure SP_ServicioEmpleado
+@detalle varchar(200),
+@cedu int
+AS
+if exists (Select s.descripcion as descripcionServicio, s.valorHoras, D.fechaServicio, D.subTotalServicio, E.cedula, E.nombre, E.apellido, E.cargo from Servicio as s
+inner join DetalleServicio as D
+on S.idServicio = D.idServicio inner join Empleado as E on D.idEmpleado = E.cedula
+where s.descripcion like @detalle and E.cedula like @cedu)
+ 
+(Select s.descripcion as descripcionServicio, s.valorHoras, D.fechaServicio, D.subTotalServicio, E.cedula, E.nombre, E.apellido, E.cargo from Servicio as s
+inner join DetalleServicio as D
+on S.idServicio = D.idServicio inner join Empleado as E on D.idEmpleado = E.cedula
+where s.descripcion like @detalle and E.cedula like @cedu)
+ 
+Else (select 'En el momento no existe un registro con esta información'
+	 as ALERT)
+ 
+ 
+--Prueba
+exec SP_ServicioEmpleado '%Audit%',105;
+
+--------------------------------------------------------------------------------------------------------------
+---- 
+CREATE TYPE DetalleServicioType AS TABLE (
+    idServicio INT,
+    idEmpleado INT,
+    fecha DATE,
+    subtotal NUMERIC(12, 2),
+    iva NUMERIC(12, 2)
+);
+
+
+
+CREATE PROCEDURE INSERTARFACTURACOMPLETA
+    @IDCLIENTE INT,
+    @NIT NUMERIC(10) = 123456789,
+    @NOMBRE_EMP VARCHAR(50) = 'Occupational Health and Safety',
+    @FECHA_FACT DATE,
+    @DETALLE_SER DetalleServicioType READONLY ----REVISAR
+AS
+BEGIN
+    BEGIN TRY
+        BEGIN TRANSACTION;
+
+       
+        DECLARE @TOTAL NUMERIC(12, 2);
+
+        SELECT @TOTAL = SUM(subtotal + iva)
+        FROM @DETALLE_SER;
+
+        
+        INSERT INTO Factura (idCliente, nit, NombreEmpresa, FechaFactura, total)
+        VALUES (@IDCLIENTE, @NIT, @NOMBRE_EMP, @FECHA_FACT, @TOTAL);
+
+        
+        DECLARE @FacturaID INT = SCOPE_IDENTITY();
+
+       
+        INSERT INTO DetalleServicio (idFactura, IdServicio, IdEmpleado, fechaServicio, subTotalServicio, ivaServicio)
+        SELECT @FacturaID, idServicio, idEmpleado, fecha, subtotal, iva
+        FROM @DETALLE_SER;
+
+        -- Confirmar la transacción
+        COMMIT TRANSACTION;
+
+        PRINT 'Factura y detalles insertados correctamente.';
+    END TRY
+    BEGIN CATCH
+        -- Revertir en caso de error
+        ROLLBACK TRANSACTION;
+        PRINT  'No se pudo realizar la insercion de la factura completa';
+    END CATCH;
+END;
+
+
+----------------------------insertar
+
+select * from Factura
+
+DECLARE @DetalleServicio DetalleServicioType;
+
+INSERT INTO @DetalleServicio (idServicio, idEmpleado, fecha, subtotal, iva)
+VALUES 
+    (1, 101, '2024-11-29', 1000.00, 190.00),
+    (2, 102, '2024-11-29', 2000.00, 380.00);
+
+EXEC INSERTARFACTURACOMPLETA
+    @IDCLIENTE = 1,
+    @FECHA_FACT = '2024-11-29',
+    @DETALLE_SER = @DetalleServicio;
+
+
+	SELECT * FROM Factura
+
+	SELECT * FROM  DetalleServicio
+-----------------------------------------------------------------------------------------------------------------
+
+
+
+
+-------------------------------------------------------------------------------------------------------------
+
+CREATE proc TOPCLIENTES
+@TOP INT
+as 
+ BEGIN 
+     
+SELECT         TOP(+@TOP) dbo.Factura.idCliente, dbo.Cliente.nombreCli, dbo.Cliente.apellidoCli, SUM(dbo.Factura.total)AS 'TOTAL DE FACTURAS' 
+FROM            dbo.Cliente INNER JOIN
+                         dbo.Factura ON dbo.Cliente.idCliente = dbo.Factura.idCliente
+						 GROUP BY dbo.Factura.idCliente,dbo.Cliente.nombreCli,dbo.Cliente.apellidoCli
+ END 
+
+---ejecutar 
+
+
+ EXEC TOPCLIENTES 15
+
+--------------------------------------
+
+
+create or alter procedure SP_ActualizaciónContacto
+		@id int,
+	  @correo varchar(50),
+	  @asunto varchar(30),
+	  @descripcion varchar(200)
+	  AS
+	  update Contacto set  correoContacto = @correo, asunto = @asunto,
+	  descripcionAsunto= @descripcion 
+	  where idCliente =  @id
+ 
+	  execute  SP_ActualizaciónContacto 14,'luis.ruiz2@example.com','Reclamo','No puedo visualizar el usuario';
+
+
